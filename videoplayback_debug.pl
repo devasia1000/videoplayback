@@ -50,13 +50,15 @@ foreach $string (@tokens){
    # we don't need to print out the status, the browser handles it                       
    #print "HTTP/1.1 200 OK\r\n";                                                         
                                                                                          
-   print "Content-Length: ", $content_length, "\r\n";                                    
-   print "Last-Modified: Fri, 28 Jun 2013 14:34:55 GMT\r\n";                             
-   print "Content-Type: video/mp4\r\n";                                                  
-   print "Date: Wed, 17 Jul 2013 14:28:52 GMT\r\n";                                      
-   print "Expires: Wed, 17 Jul 2013 14:28:52 GMT\r\nCache-Control: private, max-age=22303\r\nAccept-Ranges: bytes\r\nAccess-Control-Allow-Origin: http://www.youtube.com\r\nAccess-Control-Allow-Credentials: false\r\nTiming-Allow-Origin: http://www.youtube.com\r\nConnection: keep-alive\r\nX-Content-Type-Options: nosniff\r\nServer: gvs 1.0\n\r\n";
+   @headers=("Content-Type" , "video/mp4", "Content-Length" , $content_length, "Accept-Ranges" , "bytes", "Connection" , "keep-alive", "Server" , "gvs 1.0", "Cache-Control" , "private, max-age=22303", "Access-Control-Allow-Origin" , "http://www.youtube.com", "Access-Control-Allow-Credentials" , "false", "Timing-Allow-Origin" , "http://www.youtube.com", "Last-Modified" , "Fri, 28 Jun 2013 14:34:55 GMT", "Date" , "Wed, 17 Jul 2013 14:28:52 GMT", "Expires" , "Wed, 17 Jul 2013 14:28:52 GMT");
+  $header_ref=\@headers;
 
-   print `$command`, "\r\n";
+   $resp=HTTP::Response->new("200", "", $header_ref, $command);
+
+   $correct_resp=$resp->as_string;
+   $correct_resp =~ s/200 OK\n//;
+
+   print $correct_resp;
   }
  }
 }

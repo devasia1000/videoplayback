@@ -17,18 +17,22 @@ foreach $string (@tokens){
    #$command="curl --header \"Range: bytes=${range}\" http://127.0.0.1/audio.mp4";
 
    @length=split("-", $range);
-   $content_length=$length[1]-$length[0]+1; 
+   $content_length=$length[1]-$length[0]; 
 
    $command=`tail -c +${length[0]} audio.mp4 | head -c ${content_length}`;
    
    # we don't need to print out the status, the browser handles it
    #print "HTTP/1.1 200 OK\r\n";
-   
-   $headers={"Content-Length: ": $content_length, "Content-Type: ", "audio/mp4", "Accept-Ranges: " : "bytes", "Connection: " : "keep-alive", "Connection: " : "keep-alive", "Server:" : "gvs 1.0", "Cache-Control: " : "private, max-age=22303", "Access-Control-Allow-Origin: " : "http://www.youtube.com", "Access-Control-Allow-Credentials: " : "false", "Timing-Allow-Origin: " : "http://www.youtube.com", "Last-Modified: " : "Fri, 28 Jun 2013 14:34:55 GMT", "Date: " : "Wed, 17 Jul 2013 14:28:52 GMT", "Expires: " : "Wed, 17 Jul 2013 14:28:52 GMT"}
+ 
+   @headers=("Content-Type" , "audio/mp4", "Content-Length" , $content_length, "Accept-Ranges" , "bytes", "Connection" , "keep-alive", "Server" , "gvs 1.0", "Cache-Control" , "private, max-age=22303", "Access-Control-Allow-Origin" , "http://www.youtube.com", "Access-Control-Allow-Credentials" , "false", "Timing-Allow-Origin" , "http://www.youtube.com", "Last-Modified" , "Fri, 28 Jun 2013 14:34:55 GMT", "Date" , "Wed, 17 Jul 2013 14:28:52 GMT", "Expires" , "Wed, 17 Jul 2013 14:28:52 GMT");
+  $header_ref=\@headers;
 
-   $resp=HTTP::Response->new("200", "", $headers, $command);
+   $resp=HTTP::Response->new("200", "", $header_ref, $command);
 
-   print $resp->as_string;
+   $correct_resp=$resp->as_string;
+   $correct_resp =~ s/200 OK\n//;
+
+   print $correct_resp;
   }
  }
 
